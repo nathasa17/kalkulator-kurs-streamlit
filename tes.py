@@ -15,7 +15,7 @@ st.write("Aplikasi konversi mata uang global dengan kurs real-time menggunakan P
 # IDENTITAS PEMBUAT (SIDEBAR)
 # =========================================================
 with st.sidebar:
-    st.image ("C:\Users\Nathasa\OneDrive\Pictures\PAS PHOTO KTM NABILA SHANDY NATHASA.jpg", width=100)
+    st.image ("https://cdn-icons-png.flaticon.com/512/6997/6997662.png", width=100)
     st.title("Profil Pengembang")
     st.markdown("---")
     st.markdown("Nabila Shandy Nathasa")
