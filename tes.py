@@ -15,8 +15,8 @@ st.write("Aplikasi konversi mata uang global dengan kurs real-time menggunakan P
 # IDENTITAS PEMBUAT (SIDEBAR)
 # =========================================================
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100) # Ikon profil opsional
-    st.title("👩🏻‍💻 Profil Pengembang")
+    st.image ("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100)
+    st.title("Profil Pengembang")
     st.markdown("---")
     st.markdown("Nabila Shandy Nathasa")
     st.markdown("2313000005")
