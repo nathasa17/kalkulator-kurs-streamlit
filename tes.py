@@ -16,11 +16,11 @@ st.write("Aplikasi konversi mata uang global dengan kurs real-time menggunakan P
 # =========================================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100) # Ikon profil opsional
-    st.title("👨‍💻 Profil Pengembang")
+    st.title("👩🏻‍💻 Profil Pengembang")
     st.markdown("---")
-    st.markdown("**Nama:** Nabila Shandy Nathasa")
-    st.markdown("**NIM:** 2313000005")
-    st.markdown("**Prodi:** Sistem Informasi")
+    st.markdown("Nabila Shandy Nathasa")
+    st.markdown("2313000005")
+    st.markdown("Sistem Informasi")
     st.markdown("---")
     st.caption("© 2026 Hak Cipta Dilindungi.")
 
