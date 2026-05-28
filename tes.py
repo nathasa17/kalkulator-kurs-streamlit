@@ -11,6 +11,19 @@ st.set_page_config(page_title="SaaS Konversi Mata Uang", page_icon="💱", layou
 st.title("💱 Kalkulator Konversi Mata Uang")
 st.write("Aplikasi konversi mata uang global dengan kurs real-time menggunakan Python & Streamlit.")
 
+# =========================================================
+# IDENTITAS PEMBUAT (SIDEBAR)
+# =========================================================
+with st.sidebar:
+    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100) # Ikon profil opsional
+    st.title("👨‍💻 Profil Pengembang")
+    st.markdown("---")
+    st.markdown("**Nama:** Nabila Shandy Nathasa")
+    st.markdown("**NIM:** 2313000005")
+    st.markdown("**Prodi:** Sistem Informasi")
+    st.markdown("---")
+    st.caption("© 2026 Hak Cipta Dilindungi.")
+
 # 2. Ambil Data Kurs Terbaru dari API Gratis
 @st.cache_data(ttl=3600)
 def ambil_data_kurs():
