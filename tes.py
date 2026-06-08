@@ -11,8 +11,8 @@ st.set_page_config(page_title="Kalkulator Kurs Real-Time", layout="wide")
 # Identitas Anda di Sidebar
 st.sidebar.title("Identitas Mahasiswa")
 st.sidebar.write("### Nabila Shandy Nathasa")
-st.sidebar.write("NIM: 2313000005")
-st.sidebar.write("Prodi: S1 Sistem Informasi")
+st.sidebar.write("2313000005")
+st.sidebar.write("S1 Sistem Informasi")
 st.sidebar.write("Perbanas Institute")
 
 # ==========================================
