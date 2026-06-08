@@ -1,61 +1,102 @@
 import streamlit as st
 import requests
+import pandas as pd  # Ditambahkan untuk menyusun tabel riwayat agar rapi
+from datetime import datetime  # Ditambahkan untuk mencatat waktu konversi
 
-# =========================================================
-# KODE APLIKASI UTAMA ANDA
-# =========================================================
+# ==========================================
+# 1. KONFIGURASI HALAMAN & IDENTITAS (Sesuai Aplikasi Anda)
+# ==========================================
+st.set_page_config(page_title="Kalkulator Kurs Real-Time", layout="wide")
 
-# 1. Konfigurasi Halaman Web
-st.set_page_config(page_title="SaaS Konversi Mata Uang", page_icon="💱", layout="centered")
+# Identitas Anda di Sidebar
+st.sidebar.title("Identitas Mahasiswa")
+st.sidebar.write("### Nabila Shandy Nathasa")
+st.sidebar.write("NIM: 2313000005")
+st.sidebar.write("Prodi: S1 Sistem Informasi")
+st.sidebar.write("Perbanas Institute")
 
-st.title("💱 Kalkulator Konversi Mata Uang")
-st.write("Aplikasi konversi mata uang global dengan kurs real-time menggunakan Python & Streamlit.")
+# ==========================================
+# 2. INISIALISASI DATABASE MEMORI (FITUR BARU)
+# ==========================================
+# Membuat wadah penyimpanan kosong di memori browser saat web pertama kali dibuka
+if 'riwayat_konversi' not in st.session_state:
+    st.session_state['riwayat_konversi'] = []
 
-# =========================================================
-# IDENTITAS PEMBUAT (SIDEBAR)
-# =========================================================
-with st.sidebar:
-    st.image ("https://cdn-icons-png.flaticon.com/512/6997/6997662.png", width=100)
-    st.title("Profil Pengembang")
-    st.markdown("---")
-    st.markdown("Nabila Shandy Nathasa")
-    st.markdown("2313000005")
-    st.markdown("Sistem Informasi")
-    st.markdown("---")
-    st.caption("© 2026 Hak Cipta Dilindungi.")
-
-# 2. Ambil Data Kurs Terbaru dari API Gratis
+# ==========================================
+# 3. FUNGSI FETCH DATA API WITH CACHING
+# ==========================================
 @st.cache_data(ttl=3600)
-def ambil_data_kurs():
-    url = "https://open.er-api.com/v6/latest/USD"
-    respons = requests.get(url)
-    return respons.json()["rates"]
+def get_exchange_rates():
+    url = "https://open.er-api.com/v6/latest/USD"  # Contoh API URL yang Anda gunakan
+    try:
+        response = requests.get(url)
+        return response.json()
+    except:
+        return None
 
-try:
-    data_kurs = ambil_data_kurs()
-    daftar_mata_uang = list(data_kurs.keys())
+data_api = get_exchange_rates()
 
-    # 3. Desain Tampilan Aplikasi (UI)
-    col1, col2 = st.columns(2)
+# ==========================================
+# 4. HALAMAN UTAMA & INPUT USER
+# ==========================================
+st.title("💰 Kalkulator Konversi Mata Uang Global Real-Time")
+st.write("Aplikasi SaaS berbasis Cloud untuk menghitung nilai kurs mata uang secara akurat.")
+
+if data_api and data_api.get("result") == "success":
+    rates = data_api.get("rates")
+    list_mata_uang = list(rates.keys())
     
+    # Grid Layout untuk Input
+    col1, col2, col3 = st.columns(3)
     with col1:
-        mata_uang_asal = st.selectbox("Dari Mata Uang:", daftar_mata_uang, index=daftar_mata_uang.index("USD"))
+        nominal = st.number_input("Masukkan Nominal Uang:", min_value=0.0, value=1.0, step=0.5)
     with col2:
-        default_tujuan = daftar_mata_uang.index("IDR") if "IDR" in daftar_mata_uang else 0
-        mata_uang_tujuan = st.selectbox("Ke Mata Uang:", daftar_mata_uang, index=default_tujuan)
-
-    nominal = st.number_input("Masukkan Jumlah Uang:", min_value=0.0, value=1.0, step=1.0)
-
-    # 4. Logika Perhitungan Kurs
-    nominal_dalam_usd = nominal / data_kurs[mata_uang_asal]
-    hasil_konversi = nominal_dalam_usd * data_kurs[mata_uang_tujuan]
-
-    # 5. Menampilkan Hasil
-    st.markdown("---")
-    st.subheader("Hasil Konversi:")
-    st.success(f"### {nominal:,.2f} {mata_uang_asal} = {hasil_konversi:,.2f} {mata_uang_tujuan}")
+        dari_curr = st.selectbox("Dari Mata Uang:", list_mata_uang, index=list_mata_uang.index("USD") if "USD" in list_mata_uang else 0)
+    with col3:
+        ke_curr = st.selectbox("Ke Mata Uang:", list_mata_uang, index=list_mata_uang.index("IDR") if "IDR" in list_mata_uang else 0)
+        
+    # ==========================================
+    # 5. LOGIKA PERHITUNGAN & AUTO-SAVE (FITUR BARU)
+    # ==========================================
+    # Rumus konversi matematika
+    nominal_dalam_usd = nominal / rates[dari_curr]
+    hasil_konversi = nominal_dalam_usd * rates[ke_curr]
     
-    st.caption("ℹ️ Data kurs diperbarui secara otomatis secara real-time dari pasar global.")
+    # Tampilkan Hasil Utama ke Layar
+    st.success(f"### Hasil: {nominal:,.2f} {dari_curr} = {hasil_konversi:,.2f} {ke_curr}")
+    
+    # LOGIKA MENYIMPAN KE RIWAYAT SECARA OTOMATIS
+    waktu_sekarang = datetime.now().strftime("%H:%M:%S")
+    
+    data_log_baru = {
+        "Waktu": waktu_sekarang,
+        "Nominal Asal": f"{nominal:,.2f} {dari_curr}",
+        "Hasil Konversi": f"{hasil_konversi:,.2f} {ke_curr}"
+    }
+    
+    # Validasi agar tidak menyimpan data duplikat yang sama persis dalam waktu yang sama
+    if not st.session_state['riwayat_konversi'] or st.session_state['riwayat_konversi'][-1]["Waktu"] != waktu_sekarang:
+        st.session_state['riwayat_konversi'].append(data_log_baru)
 
-except Exception as e:
-    st.error("Gagal memuat data kurs. Pastikan laptop Anda terhubung ke internet.")
+    # ==========================================
+    # 6. MENAMPILKAN TABEL RIWAYAT DI BAWAH (FITUR BARU)
+    # ==========================================
+    st.write("---")
+    st.subheader("📜 Riwayat Konversi Pengguna (Auto-Saved)")
+    
+    if st.session_state['riwayat_konversi']:
+        # Mengubah list memori menjadi tabel rapi dengan bantuan library Pandas
+        df_tabel = pd.DataFrame(st.session_state['riwayat_konversi'])
+        
+        # Menampilkan tabel interaktif di web Streamlit
+        st.dataframe(df_tabel, use_container_width=True)
+        
+        # Tombol pelengkap untuk membersihkan riwayat
+        if st.button("🔴 Hapus Semua Riwayat"):
+            st.session_state['riwayat_konversi'] = []
+            st.rerun()
+    else:
+        st.info("Belum ada riwayat pencarian. Silakan lakukan transaksi di atas.")
+
+else:
+    st.error("Gagal memuat data kurs real-time. Periksa koneksi internet server cloud Anda.")
