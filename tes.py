@@ -82,7 +82,7 @@ if data_api and data_api.get("result") == "success":
     # 6. MENAMPILKAN TABEL RIWAYAT DI BAWAH (FITUR BARU)
     # ==========================================
     st.write("---")
-    st.subheader("📜 Riwayat Konversi Pengguna (Auto-Saved)")
+    st.subheader("📜 Riwayat Konversi Pengguna")
     
     if st.session_state['riwayat_konversi']:
         # Mengubah list memori menjadi tabel rapi dengan bantuan library Pandas
